@@ -1,1 +1,2 @@
-module.exports = require('./lib/test.js');
+module.exports = require('./lib/index.js');
+

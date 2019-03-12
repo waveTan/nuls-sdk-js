@@ -1,12 +1,10 @@
-/*const nuls = require('./index.js');
-// 创建地址
-const newAddress = nuls.newAddress();
+const nuls = require('./index');
+
+
+//创建地址
+/*let passWord = '';
+const newAddress = nuls.newAddress(passWord);
 console.log(newAddress);*/
-
-const sdk = require('./api/sdk');
-
-const newAddress = sdk.newEcKey();
-console.log(newAddress);
 
 //key:2de32308846652eeeaf68e23ef586aecb82f0459d4b520dddf13c7542c2b8f83
 //pub:02a4859a56aa2d4277b1f8a9243a764d9adf8ad5965b772c9278afbed8be059e6b
@@ -14,10 +12,15 @@ console.log(newAddress);
 //address:Nsdtr9G1PpZMyi7G2TafXoHYUfBkaFKz
 //导入地址
 /*const key ="2de32308846652eeeaf68e23ef586aecb82f0459d4b520dddf13c7542c2b8f83";
-const getAddressByPri = nuls.importByKey(key);
-console.log(getAddressByPri);*/
+const importAddress = nuls.importByKey(key);
+console.log(importAddress);*/
 
-//交易序列化
+//获取inputs owne
+nuls.inputsOwner();
+
+//交易签名
+nuls.transferTransaction();
+
 
 //获取UTXO
 
