@@ -6,7 +6,7 @@
   "scripts": {
     "cleanLib": "./node_modules/.bin/rimraf lib",
     "bableBuild": "./node_modules/.bin/babel src --out-dir lib",
-    "prepublish":"npm run cleanLib && npm run bableBuild",
+    "prepublish": "npm run cleanLib && npm run bableBuild",
     "test": "node ./src/test"
   },
   "repository": {
@@ -19,6 +19,7 @@
     "nuls-sdk"
   ],
   "dependencies": {
+    "axios": "^0.18.0",
     "babel-cli": "^6.26.0",
     "babel-plugin-transform-runtime": "^6.23.0",
     "babel-preset-es2015": "^6.24.1",

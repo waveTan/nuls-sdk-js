@@ -25,27 +25,23 @@ module.exports = {
   },
 
   //拼装inputs owne
-  inputsOwner(){
-    let owner = sdk.getOwner('00208c0e7500786f303b40b8dda8fe1e58d0bdbbebd89126b052f5f7f3019b7a7037',15);
-    console.log(owner)
+  inputsOwner(fromHash, fromIndex) {
+    return sdk.getOwner(fromHash, fromIndex);
   },
 
   //转账交易
-  transferTransaction() {
+  transferTransaction(pri, pub, inputsOwner, outputsOwner, remark) {
     let tx = new TransferTransaction();
-    tx.remark = 'for test';
-    tx.time = 123456789;
-    tx.inputs = [
-      {owner: '9e9644d3be6c9f90947580ad74641e24f4d0f791c6182c06ec76e270f703feb801', na: 100000000, lockTime: 0}
-    ];
-    tx.outputs = [
-      {owner: "Nse2ACrBkXJiq5KoFCJCb5NaJT9bk4nZ", na: 99000000, lockTime: 0}
-    ];
+    tx.remark = remark;
+    tx.time = (new Date()).getTime();
+    tx.inputs = inputsOwner;
+    tx.outputs = outputsOwner;
     //计算hash
     let hash = sdk.getTxHash(tx);
-    console.log(hash.toString('hex'));
     //签名
     sdk.signatureTx(tx, pub, pri);
+    //console.log(tx.txSerialize().toString('hex'));
+    return {hash: hash.toString('hex'), signature: tx.txSerialize().toString('hex')}
   }
 
 

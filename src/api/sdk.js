@@ -45,7 +45,7 @@ module.exports = {
     let pubBuffer = Buffer.from(pub, 'hex');
     let sha = cryptos.createHash('sha256').update(pubBuffer).digest();
     let pubkeyHash = cryptos.createHash('rmd160').update(sha).digest();
-    let addrBuffer = Buffer.concat([Buffer.from([0xFF & 8964 >> 0]), Buffer.from([0xFF & 8964 >> 8]), Buffer.from([1]), pubkeyHash]);
+    let addrBuffer = Buffer.concat([Buffer.from([0xFF & 261 >> 0]), Buffer.from([0xFF & 261 >> 8]), Buffer.from([1]), pubkeyHash]);
     let xor = 0x00;
     let temp = "";
     let tempBuffer = Buffer.allocUnsafe(addrBuffer.length + 1);
@@ -118,7 +118,6 @@ module.exports = {
   },
 
   getTxHash: function (transaction) {
-    console.log(transaction);
     let bytes = transaction.serializeForHash();
     let hash = this.getSha256TiwceBuf(bytes);
     transaction.hash = Buffer.concat([Buffer.from([0x00]), hash], hash.length + 1);
