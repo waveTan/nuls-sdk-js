@@ -1,7 +1,7 @@
 //import axios from 'axios'
 const axios = require('axios');
 const nuls = require('./index');
-
+const utils = require('./utils/utils');
 
 //创建地址
 /*let passWord = '';
@@ -20,82 +20,96 @@ console.log(importAddress);*/
 /**
  * from    TTaqFxuD1xc6gpixUiMVQsjMZ5fdYJ2o
  * to      TTakMrubBXi998CZgaYdTy2Nrqwd2ptq
- * value   0.8
- * remark  test transfer
+ * value   8
+ * remark  测试转账开始 测试转账开始
  */
 
 let pri = '407d5cd9b5d62ab633c52dfb45542622b06c05004a0314c312390a32b5d06234';
 let pub = '032dd7aaff8d2c3ae6597877b67f87702f44f5998b3da4459ddeb6eec8d39171c9';
 let fromAddress = 'TTaqFxuD1xc6gpixUiMVQsjMZ5fdYJ2o';
 let toAddress = 'TTakMrubBXi998CZgaYdTy2Nrqwd2ptq';
-let amount = '80000000';
-let remark = 'test transfer';
+let amount = 800000000; //8
+let remark = '测试转账开始 测试转账开始';
 
 //获取input utxo
 function getInputUtxo(fromAddress, amount) {
-  return axios.post('http://116.62.135.185:8081/', {
+  return axios.post('http://192.168.1.127:8080/', {
     "jsonrpc": "2.0",
-    "method": "getUTXO",
+    "method": "getUTXOS",
     "params": [fromAddress, amount],
     "id": 1234
   })
-    .then(function (response) {
+    .then((response) => {
       return response.data.result;
     })
-    .catch(function (error) {
+    .catch((error) => {
+      console.log(error);
+    });
+}
+
+//验证交易
+function valiTransaction(transactionInfo) {
+  return axios.post('http://127.0.0.1:8001/api/accountledger/transaction/valiTransaction', {"txHex": transactionInfo})
+    .then((response) => {
+      return response;
+    })
+    .catch((error) => {
       console.log(error);
     });
 }
 
 //广播交易
 function broadcast(transactionInfo) {
-  return axios.post('http://127.0.0.1:8001/api/accountledger/transaction/broadcast', {transactionInfo})
-    .then(function (response) {
-      return response.data;
+  return axios.post('http://127.0.0.1:8001/api/accountledger/transaction/broadcast', {txHex: transactionInfo})
+    .then((response) => {
+      return response;
     })
-    .catch(function (error) {
+    .catch((error) => {
       console.log(error);
     });
 }
-
 
 async function test(pri, pub, fromAddress, toAddress, amount, remark) {
   const inputUtxoInfo = await getInputUtxo(fromAddress, amount);
   let inputOwner = [];
   let totalValue = 0;
-  //循环放入
+  let fee = 100000;
+  //判断是否零钱过多
+  if (inputUtxoInfo.length >= 6000) {
+    console.log("零钱过多不能消费")
+  } else {
+    //计算手续费 （124 + 50  * inputs.length + 38 * outputs.length + remark.bytes.length ）/1024
+    fee = Math.ceil((124 + 50 * inputUtxoInfo.length + 38 * 2 + +utils.stringToByte(remark).length) / 1024) * 100000;
+  }
+  //计算转账金额需要的inputUtxo
   for (let item of inputUtxoInfo) {
     totalValue = totalValue + item.value;
-    inputOwner.push({owner: nuls.inputsOwner(item.fromHash, item.fromIndex), na: item.value, lockTime: 0})
+    inputOwner.push({owner: item.owner, na: item.value, lockTime: item.lockTime});
   }
   let outputOwner = [
     {owner: toAddress, na: amount, lockTime: 0}
   ];
   //计算多余的金额并返回
-  if (totalValue - 800000000 > 0) {
-    outputOwner.push({owner: fromAddress, na: totalValue - 800000000 - 1000000, lockTime: 0})
+  if (totalValue - amount > 0) {
+    outputOwner.push({owner: fromAddress, na: totalValue - amount - fee, lockTime: 0})
   }
-/*  console.log(inputOwner);
-  console.log(outputOwner);*/
   let hashOrSignature = nuls.transferTransaction(pri, pub, inputOwner, outputOwner, remark);
-  console.log(hashOrSignature);
-  console.log("*****************************************************");
-  /*const broadcastInfo = await broadcast(hashOrSignature.signature);
-  console.log(broadcastInfo)*/
+  //验证交易
+  let valiTransactions = await valiTransaction(hashOrSignature.signature);
+  console.log(valiTransactions.data);
+  //广播交易
+  const broadcastInfo = await broadcast(hashOrSignature.signature);
+  console.log(broadcastInfo.data)
+  /* //验证交易成功
+   if(valiTransactions.success){
+     //广播交易
+     const broadcastInfo = await broadcast(hashOrSignature.signature);
+     console.log(broadcastInfo.data)
+   }else {
+     console.log("验证交易失败")
+   }*/
 }
 
+//测试开始
 test(pri, pub, fromAddress, toAddress, amount, remark);
 
-
-//获取inputs owne
-//nuls.inputsOwner();
-
-//交易签名
-//nuls.transferTransaction();
-
-
-//获取UTXO
-
-//交易签名
-
-//广播交易
