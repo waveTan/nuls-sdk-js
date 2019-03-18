@@ -1,4 +1,4 @@
-const seri = require("../api/serializer");
+const ser = require("../api/serializer");
 const bs58 = require('bs58');
 
 function sizeOfShort() {
@@ -43,10 +43,10 @@ function sizeOfVarInt(val) {
   if (val < 253) {
     return 1;
   }
-  if (value <= 0xFFFF) {
+  if (val <= 0xFFFF) {
     return 3;
   }
-  if (value <= 0xFFFFFFFF) {
+  if (val <= 0xFFFFFFFF) {
     return 5;
   }
   return 9;
@@ -94,7 +94,7 @@ let Transaction = function () {
     let s = sizeOfShort();
     s += sizeOfInt48();
     s += sizeOfString(this.remark);
-    if (txData) {
+    if (this.txData) {
       s += this.getTxDataSize();
     } else {
       s += 4;
@@ -176,8 +176,7 @@ let Transaction = function () {
 
   //默认实现只写一个占位符
   this.writeTxData = function (serializer) {
-    serializer.getBufWriter().write(Buffer.from([0xFF, 0xFF, 0xFF, 0xFF]));
-    return;
+    return serializer.getBufWriter().write(Buffer.from([0xFF, 0xFF, 0xFF, 0xFF]));
   };
 
   //签名数据的大小
@@ -197,7 +196,7 @@ let Transaction = function () {
         s += sizeOfBytesHex(value);
       })
     }
-    return 0;
+    return s;
   };
 
   //token数据的大小

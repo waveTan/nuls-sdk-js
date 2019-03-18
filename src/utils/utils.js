@@ -1,6 +1,6 @@
 module.exports = {
   stringToByte(str) {
-    let bytes = new Array();
+    let bytes = [];
     let len, c;
     len = str.length;
     for(let i = 0; i < len; i++) {
