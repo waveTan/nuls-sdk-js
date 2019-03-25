@@ -6,8 +6,7 @@ function toUInt48LE(value) {
   buf.writeUIntLE(value, 0, 6);
   return buf;
 }
-
-Serializer = function (bufWriter) {
+ Serializer = function (bufWriter) {
   if (!bufWriter) {
     bufWriter = new bitcore.encoding.BufferWriter();
   }

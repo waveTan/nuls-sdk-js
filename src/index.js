@@ -31,7 +31,7 @@ module.exports = {
 
   //转账交易
   transferTransaction(pri, pub, inputsOwner, outputsOwner, remark) {
-    let tx = new TransferTransaction();
+    let tx = new txs.TransferTransaction();
     tx.remark = remark;
     tx.time = (new Date()).getTime();
     tx.inputs = inputsOwner;

@@ -57,7 +57,6 @@ function toUInt48LE(value) {
   let buf = Buffer.alloc(6);
   buf.writeUIntLE(value, 0, 6);
   return buf;
-
 }
 
 function addressToBytes(address) {
@@ -225,28 +224,29 @@ let Transaction = function () {
   };
 };
 
-TransferTransaction = function () {
-  Transaction.call(this);
-  this.type = 2;
-  this.size = function () {
-    console.log("size2")
+module.exports = {
+  TransferTransaction: function () {
+    Transaction.call(this);
+    this.type = 2;
+    this.size = function () {
+      console.log("size2")
+    }
+  },
+  AliasTransaction: function () {
+    this.type = 3;
+    this.address = null;
+    this.alias = null;
+    //重新序列化txData方法
+    this.writeTxData = function (serializer) {
+      if (!this.address || !this.alias) {
+        throw 'Error';
+      }
+      serializer.getBufWriter().write(addressToBytes(this.address));
+      return serializer.writeString(this.alias);
+    };
+    this.getTxDataSize = function () {
+      return 23 + sizeOfString(this.alias);
+    }
   }
 };
 
-AliasTransaction = function () {
-  this.type = 3;
-  this.address = null;
-  this.alias = null;
-  //重新序列化txData方法
-  this.writeTxData = function (serializer) {
-    if (!this.address || !this.alias) {
-      throw 'Error';
-    }
-    serializer.getBufWriter().write(addressToBytes(this.address));
-    serializer.writeString(this.alias);
-    return;
-  };
-  this.getTxDataSize = function () {
-    return 23 + sizeOfString(this.alias);
-  }
-};

@@ -11,7 +11,7 @@ $ npm i nuls-sdk-js
 const nuls = require('./index');
 
 //创建地址
-let passWord = '';
+let passWord = "";
 const newAddress = nuls.newAddress(passWord);
 console.log(newAddress);
 
