@@ -1,4 +1,4 @@
-const ser = require("../api/serializer");
+const ser = require("../api/serializers");
 const bs58 = require('bs58');
 
 function sizeOfShort() {
@@ -152,7 +152,7 @@ let Transaction = function () {
   };
 
   this.txSerialize = function () {
-    let bw = new Serializer();
+    let bw = new Serializers();
     bw.getBufWriter().writeUInt16LE(this.type);
     bw.writeUINT48LE(this.time);
     bw.writeString(this.remark);
@@ -164,7 +164,7 @@ let Transaction = function () {
 
   //序列化交易，不包含签名数据
   this.serializeForHash = function () {
-    let bw = new Serializer();
+    let bw = new Serializers();
     bw.getBufWriter().writeUInt16LE(this.type);
     bw.writeUINT48LE(this.time);
     bw.writeString(this.remark);

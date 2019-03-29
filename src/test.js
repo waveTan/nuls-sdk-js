@@ -33,7 +33,7 @@ let remark = '测试转账开始 测试转账开始';
 
 //获取input utxo
 function getInputUtxo(fromAddress, amount) {
-  return axios.post('http://192.168.1.127:8080/', {
+  return axios.post('http://116.62.135.185:8081/', {
     "jsonrpc": "2.0",
     "method": "getUTXOS",
     "params": [fromAddress, amount],
