@@ -7,7 +7,7 @@ function toUInt48LE(value) {
   return buf;
 }
 
- Serializers = function (bufWriter) {
+let Serializers = function (bufWriter) {
   if (!bufWriter) {
     bufWriter = new bitcore.encoding.BufferWriter();
   }
@@ -51,3 +51,4 @@ function toUInt48LE(value) {
     bufWriter.writeUInt64LEBN(new bitcore.crypto.BN(value));
   }
 };
+module.exports = Serializers;

@@ -1,4 +1,4 @@
-const ser = require("../api/serializers");
+const Serializers = require("../api/serializers");
 const bs58 = require('bs58');
 
 function sizeOfShort() {
