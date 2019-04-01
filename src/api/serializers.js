@@ -1,4 +1,5 @@
-const bitcore = require('bitcore-lib');
+const BufferWriter = require("../utils/bufferwriter");
+const BN  = require("../utils/bn");
 
 //将数字转为6个字节的字节数组
 function toUInt48LE(value) {
@@ -9,7 +10,7 @@ function toUInt48LE(value) {
 
 let Serializers = function (bufWriter) {
   if (!bufWriter) {
-    bufWriter = new bitcore.encoding.BufferWriter();
+    bufWriter = new BufferWriter();
   }
 
   this.writeUINT48LE = function (value) {
@@ -48,7 +49,7 @@ let Serializers = function (bufWriter) {
   };
 
   this.writeUInt64LE = function (value) {
-    bufWriter.writeUInt64LEBN(new bitcore.crypto.BN(value));
+    bufWriter.writeUInt64LEBN(new BN(value));
   }
 };
 module.exports = Serializers;

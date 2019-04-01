@@ -28,8 +28,8 @@ let pri = '407d5cd9b5d62ab633c52dfb45542622b06c05004a0314c312390a32b5d06234';
 let pub = '032dd7aaff8d2c3ae6597877b67f87702f44f5998b3da4459ddeb6eec8d39171c9';
 let fromAddress = 'TTaqFxuD1xc6gpixUiMVQsjMZ5fdYJ2o';
 let toAddress = 'TTakMrubBXi998CZgaYdTy2Nrqwd2ptq';
-let amount = 800000000; //8
-let remark = '测试转账开始 测试转账开始';
+let amount = 80000000; //0.8 nuls 转出
+let remark = 'test test';
 
 //获取input utxo
 function getInputUtxo(fromAddress, amount) {
@@ -97,17 +97,14 @@ async function test(pri, pub, fromAddress, toAddress, amount, remark) {
   //验证交易
   let valiTransactions = await valiTransaction(hashOrSignature.signature);
   console.log(valiTransactions.data);
-  //广播交易
-  const broadcastInfo = await broadcast(hashOrSignature.signature);
-  console.log(broadcastInfo.data)
-  /* //验证交易成功
-   if(valiTransactions.success){
+   //验证交易成功
+   if(valiTransactions.data.success){
      //广播交易
      const broadcastInfo = await broadcast(hashOrSignature.signature);
      console.log(broadcastInfo.data)
    }else {
      console.log("验证交易失败")
-   }*/
+   }
 }
 
 //测试开始

@@ -1,5 +1,6 @@
 const Serializers = require("../api/serializers");
 const bs58 = require('bs58');
+const bufferFrom = require('buffer-from');
 
 function sizeOfShort() {
   return 2;
@@ -60,8 +61,11 @@ function toUInt48LE(value) {
 }
 
 function addressToBytes(address) {
+  /*let bytes = bs58.decode(address);
+  return bytes.subarray(0, 23);*/
+
   let bytes = bs58.decode(address);
-  return bytes.subarray(0, 23);
+  return bufferFrom(bytes.subarray(0, 23));
 }
 
 function bytesToAddress(bytes) {

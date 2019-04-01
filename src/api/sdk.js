@@ -1,14 +1,17 @@
-const randomBytes = require('randombytes');
-const BigInteger = require('bigi');
-const ecurve = require('ecurve');
+// const randomBytes = require('randombytes');
+// const BigInteger = require('bigi');
+// const ecurve = require('ecurve');
 const CryptoJS = require('crypto-js');
 const sha256 = require('sha256');
 const rs = require('jsrsasign');
-const bs58 = require('bs58');
+// const bs58 = require('bs58');
 const cryptos = require("crypto");
-const bitcore = require("bitcore-lib");
-const iv = CryptoJS.enc.Hex.parse('0000000000000000');
+// const iv = CryptoJS.enc.Hex.parse('0000000000000000');
 
+const bufferUtils = require("../utils/buffer");
+
+
+const Hash = require("../utils/hash");
 //将数字转为6个字节的字节数组
 function toUInt16LE(value) {
   let buf = Buffer.alloc(2);
@@ -22,7 +25,7 @@ module.exports = {
     let keys = {};
     let randombytes = randomBytes(32);
     randombytes[0] = randombytes[0] >> 1;
-    let privateKey = Buffer.from(randombytes, 'hex').toString('hex');
+    let privateKey = bufferUtils.bufferToHex(Buffer.from(randombytes, 'hex'));
     keys['pri'] = privateKey;
     keys['pub'] = this.getPub(privateKey);
     return keys;
@@ -90,8 +93,7 @@ module.exports = {
 
   signatureTx: function (tx, pubHex, priHex) {
     let pub = Buffer.from(pubHex, 'hex');
-    let signValue = Buffer.from(this.signature(tx.hash.subarray(1).toString('hex'), priHex), 'hex');
-    // var sig = Buffer.concat([pub, Buffer.from([0x00], signValue)], pub.length + 1 + signValue.length);
+    let signValue = Buffer.from(this.signature(bufferUtils.bufferToHex(tx.hash.subarray(1)), priHex), 'hex');
     tx.p2PHKSignatures = [{'pub': pub, signValue: signValue}];
   },
 
@@ -109,7 +111,7 @@ module.exports = {
   },
 
   getSha256TiwceBuf: function (buf) {
-    return bitcore.crypto.Hash.sha256sha256(buf);
+    return Hash.sha256sha256(buf);
   },
 
   getOwner: function (txHash, fromIndex) {

@@ -33,16 +33,13 @@ module.exports = {
   transferTransaction(pri, pub, inputsOwner, outputsOwner, remark) {
     let tx = new txs.TransferTransaction();
     tx.remark = remark;
-    tx.time = (new Date()).getTime();
+    tx.time = (new Date()).valueOf();
     tx.inputs = inputsOwner;
     tx.outputs = outputsOwner;
     //计算hash
     let hash = sdk.getTxHash(tx);
     //签名
     sdk.signatureTx(tx, pub, pri);
-    //console.log(tx.txSerialize().toString('hex'));
     return {hash: hash.toString('hex'), signature: tx.txSerialize().toString('hex')}
   }
-
-
 };
