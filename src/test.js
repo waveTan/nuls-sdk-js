@@ -1,5 +1,4 @@
 //import axios from 'axios'
-const axios = require('axios');
 const nuls = require('./index');
 const utils = require('./utils/utils');
 
@@ -20,8 +19,8 @@ console.log(importAddress);*/
 /**
  * from    TTaqFxuD1xc6gpixUiMVQsjMZ5fdYJ2o
  * to      TTakMrubBXi998CZgaYdTy2Nrqwd2ptq
- * value   8
- * remark  测试转账开始 测试转账开始
+ * value   0.8
+ * remark  remark....
  */
 
 let pri = '407d5cd9b5d62ab633c52dfb45542622b06c05004a0314c312390a32b5d06234';
@@ -29,54 +28,17 @@ let pub = '032dd7aaff8d2c3ae6597877b67f87702f44f5998b3da4459ddeb6eec8d39171c9';
 let fromAddress = 'TTaqFxuD1xc6gpixUiMVQsjMZ5fdYJ2o';
 let toAddress = 'TTakMrubBXi998CZgaYdTy2Nrqwd2ptq';
 let amount = 80000000; //0.8 nuls 转出
-let remark = 'test test';
+let remark = 'remark....';
 
-//获取input utxo
-function getInputUtxo(fromAddress, amount) {
-  return axios.post('http://116.62.135.185:8081/', {
-    "jsonrpc": "2.0",
-    "method": "getUTXOS",
-    "params": [fromAddress, amount],
-    "id": 1234
-  })
-    .then((response) => {
-      return response.data.result;
-    })
-    .catch((error) => {
-      console.log(error);
-    });
-}
-
-//验证交易
-function valiTransaction(transactionInfo) {
-  return axios.post('http://127.0.0.1:8001/api/accountledger/transaction/valiTransaction', {"txHex": transactionInfo})
-    .then((response) => {
-      return response;
-    })
-    .catch((error) => {
-      console.log(error);
-    });
-}
-
-//广播交易
-function broadcast(transactionInfo) {
-  return axios.post('http://127.0.0.1:8001/api/accountledger/transaction/broadcast', {txHex: transactionInfo})
-    .then((response) => {
-      return response;
-    })
-    .catch((error) => {
-      console.log(error);
-    });
-}
-
-async function test(pri, pub, fromAddress, toAddress, amount, remark) {
-  const inputUtxoInfo = await getInputUtxo(fromAddress, amount);
+//转账功能 trustUrl
+async function transfer(pri, pub, fromAddress, toAddress, amount, remark) {
+  const inputUtxoInfo = await nuls.getInputUtxo(fromAddress, amount);
   let inputOwner = [];
   let totalValue = 0;
   let fee = 100000;
   //判断是否零钱过多
   if (inputUtxoInfo.length >= 6000) {
-    console.log("零钱过多不能消费")
+    return {success: false, data: "Too much change to consume"}
   } else {
     //计算手续费 （124 + 50  * inputs.length + 38 * outputs.length + remark.bytes.length ）/1024
     fee = Math.ceil((124 + 50 * inputUtxoInfo.length + 38 * 2 + +utils.stringToByte(remark).length) / 1024) * 100000;
@@ -95,18 +57,21 @@ async function test(pri, pub, fromAddress, toAddress, amount, remark) {
   }
   let hashOrSignature = nuls.transferTransaction(pri, pub, inputOwner, outputOwner, remark);
   //验证交易
-  let valiTransactions = await valiTransaction(hashOrSignature.signature);
-  console.log(valiTransactions.data);
-   //验证交易成功
-   if(valiTransactions.data.success){
-     //广播交易
-     const broadcastInfo = await broadcast(hashOrSignature.signature);
-     console.log(broadcastInfo.data)
-   }else {
-     console.log("验证交易失败")
-   }
+  let valiTransactions = await nuls.valiTransaction(hashOrSignature.signature);
+  //验证交易成功
+  if (valiTransactions.data.success) {
+    //广播交易
+    const broadcastInfo = await nuls.broadcast(hashOrSignature.signature);
+    return broadcastInfo.data
+  } else {
+    return {success: false, data: "verify transaction failure"}
+  }
 }
 
 //测试开始
-test(pri, pub, fromAddress, toAddress, amount, remark);
+transfer(pri, pub, fromAddress, toAddress, amount, remark).then((response) => {
+  console.log(response)
+}).catch((error) => {
+  console.log(error)
+});
 
