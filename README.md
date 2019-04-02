@@ -1,5 +1,5 @@
 # 注意
-nuls-sdk-js 在不断的中....
+nuls-sdk-js
 
 # Install
 ```bash
@@ -29,7 +29,7 @@ let toAddress = '';   //转入地址
 let amount = ;        //转出金额右移八位
 let remark = '';      //交易备注
 
-//转账功能 trustUrl
+//转账功能
 async function transfer(pri, pub, fromAddress, toAddress, amount, remark) {
   const inputUtxoInfo = await nuls.getInputUtxo(fromAddress, amount);
   let inputOwner = [];
