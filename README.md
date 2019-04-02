@@ -1,5 +1,5 @@
 # 注意
-nuls-sdk-js
+nuls-sdk-js  测试网用
 
 # Install
 ```bash
